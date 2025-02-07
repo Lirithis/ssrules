@@ -1,62 +1,57 @@
-# =========================
-# Zhihu 小火箭模块示例
-# =========================
+#!name=Zhihu去广告&优化
+#!desc=移除知乎部分广告、屏蔽黑名单用户内容等
 
 [URL Rewrite]
 
-# === 屏蔽 / 拦截并返回 200空数据（对应圈X的 reject-dict 或 reject-200） ===
+# === 屏蔽 / 拦截并返回空数据（对应圈X的 reject-dict / reject-200） ===
 
-# 1) 原：^https?:\/\/118\.89\.204\.198 url reject-dict
+# 1) 拦截
 ^https?:\/\/118\.89\.204\.198 reject-200
-
-# 2) 原：^https?:\/\/103\.41\.167\.237 url reject-dict
 ^https?:\/\/103\.41\.167\.237 reject-200
-
-# 3) 原：^https?:\/\/2402:4e00:1200:ed00:0:9089:6dac:96b6 url reject-200
 ^https?:\/\/2402:4e00:1200:ed00:0:9089:6dac:96b6 reject-200
 
-# 4) 屏蔽下发的配置，如皮肤等 (原 ^https?:\/\/api\.zhihu\.com\/ab\/api\/v1\/products\/zhihu\/platforms\/ios\/config url reject)
+# 2) 屏蔽下发配置
 ^https?:\/\/api\.zhihu\.com\/ab\/api\/v1\/products\/zhihu\/platforms\/ios\/config reject
 
-# 5~6) 拦截开屏广告 (原圈X规则为 reject-dict)
+# 3) 拦截开屏广告
 ^https?:\/\/api\.zhihu\.com\/commercial_api\/launch_v2\? reject-200
 ^https?:\/\/api\.zhihu\.com\/commercial_api\/real_time_launch_v2\? reject-200
 
-# 7~8) 拦截品牌提问广告
+# 4) 拦截品牌提问广告
 ^https?:\/\/api\.zhihu\.com\/brand\/question\/\d+\/card\? reject-200
 ^https?:\/\/www\.zhihu\.com\/api\/v\d+\/brand\/question\/\d+\/card\? reject-200
 
-# 9) 去除底部标签页关注人角标
+# 5) 去除底部标签页关注人角标
 ^https?:\/\/api\.zhihu\.com\/moments\/tab_v2 reject-200
 
-# 10) 去除消息通知角标
+# 6) 去除消息通知角标
 ^https?:\/\/api\.zhihu\.com\/(notifications\/v\d\/count) reject-200
 
-# 11) 拦截回答下的卡片广告
+# 7) 拦截回答下的卡片广告
 ^https?:\/\/www\.zhihu\.com\/api\/v\d\/answers\/\d+\/recommendations reject-200
 
-# 12) 拦截应用内弹窗
+# 8) 拦截应用内弹窗
 ^https?:\/\/api\.zhihu\.com\/me\/guides reject-200
 
-# 13) 去除关注页最常访问
+# 9) 去除关注页最常访问
 ^https?:\/\/api\.zhihu\.com\/moments\/recent reject-200
 
-# 14) 拦截推荐页顶部广告
+# 10) 拦截推荐页顶部广告
 ^https?:\/\/api\.zhihu\.com\/api\/v4\/ecom_data\/config reject-200
 
-# 15) 底栏加号的广告
+# 11) 底栏加号的广告
 ^https?:\/\/api\.zhihu\.com\/content-distribution-core\/bubble\/common\/settings reject-200
 
-# 16) 推荐页搜索栏左侧图标
+# 12) 推荐页搜索栏左侧图标
 ^https?:\/\/api\.zhihu\.com\/feed\/render\/revisit\/current_reading reject-200
 
-# 17) 疑似推荐页内容更新红点
+# 13) 疑似推荐页内容更新红点
 ^https?:\/\/api\.zhihu\.com\/feed\/render\/revisit\/tag_config reject-200
 
-# 18) 去除回答页的相关搜索
+# 14) 去除回答页的相关搜索
 ^https?:\/\/www\.zhihu\.com\/api\/v\d+\/search\/related_queries\/answer reject-200
 
-# 19) 暂不清楚作用
+# 15) 暂不清楚作用
 ^https?:\/\/api\.zhihu\.com\/commercial_api\/banners_v3\/app_topstory_banner reject-200
 ^https?:\/\/api\.zhihu\.com\/ad-style-service\/request reject
 
@@ -69,7 +64,7 @@ zhihu-people = type=http-response,pattern=^https?:\/\/api\.zhihu\.com\/people\/,
 # 2) 关键词屏蔽 - 解锁本地的关键词屏蔽功能，需要开启本地VIP
 zhihu-feed-root-block = type=http-response,pattern=^https?:\/\/api\.zhihu\.com\/feed-root\/block,requires-body=1,max-size=0,script-path=https://gist.githubusercontent.com/blackmatrix7/f5f780d0f56b319b6ad9848fd080bb18/raw/zheye.min.js
 
-# 3) 优化软件配置
+# 3) 优化软件配置（皮肤等）
 zhihu-mcloud-config = type=http-response,pattern=^https?:\/\/m-cloud\.zhihu\.com\/api\/cloud\/config\/all\?,requires-body=1,max-size=0,script-path=https://gist.githubusercontent.com/blackmatrix7/f5f780d0f56b319b6ad9848fd080bb18/raw/zheye.min.js
 zhihu-appcloud2-config = type=http-response,pattern=^https?:\/\/appcloud2\.zhihu\.com\/v\d+\/config,requires-body=1,max-size=0,script-path=https://gist.githubusercontent.com/blackmatrix7/f5f780d0f56b319b6ad9848fd080bb18/raw/zheye.min.js
 zhihu-feed-render-tab-config = type=http-response,pattern=^https?:\/\/api\.zhihu\.com\/feed\/render\/tab\/config,requires-body=1,max-size=0,script-path=https://gist.githubusercontent.com/blackmatrix7/f5f780d0f56b319b6ad9848fd080bb18/raw/zheye.min.js
@@ -121,6 +116,6 @@ zhihu-search-preset-words = type=http-response,pattern=^https?:\/\/api\.zhihu\.c
 hostname = 118.89.204.198,103.41.167.237,2402:4e00:1200:ed00:0:9089:6dac:96b6,www.zhihu.com,api.zhihu.com,zhuanlan.zhihu.com,appcloud2.zhihu.com,m-cloud.zhihu.com,103.41.167.236,103.41.167.234,103.41.167.235,103.41.167.226
 
 # 说明：
-# 1. 可将此段内容保存为 .conf 文件后，使用小火箭导入并启用。
-# 2. 如果脚本文件无效或链接失效，可尝试将 zheye.min.js 下载后放到自己可访问的存储，并修改 script-path。
-# 3. 部分匹配规则仅适用于特定环境与域名。可根据需要酌情增删或修改。
+# 1. 可将此内容保存为 .conf 文件后，使用小火箭导入并启用。
+# 2. 如果脚本文件无效或链接失效，可尝试将 zheye.min.js 下载后放至自己可访问的地址并修改 script-path。
+# 3. 部分匹配规则仅适用于特定地区及知乎 App，自行酌情调整。

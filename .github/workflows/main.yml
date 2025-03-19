@@ -1,4 +1,4 @@
-name: Update File from Another Repository
+name: Update ADBlock.sgmodule
 
 on:
   schedule:
@@ -16,7 +16,7 @@ jobs:
         run: |
           curl -s -o temp.txt https://raw.githubusercontent.com/XiangwanGuan/Shadowrocket/8dd21c62533f6c027ea51c5de1e180b6b1a543ab/Module.sgmodule
 
-      - name: Filter and update the file
+      - name: Filter and update ADBlock.sgmodule
         run: |
           # 获取当前日期
           UPDATE_DATE=$(date +"%Y-%m-%d %H:%M:%S")
@@ -27,12 +27,12 @@ jobs:
           # 在第三行插入更新日期（带注释符号）
           head -n 2 temp.txt > header.txt
           echo "#! Updated: $UPDATE_DATE" >> header.txt
-          cat header.txt filtered.txt > path/to/your-file.txt
+          cat header.txt filtered.txt > ADBlock.sgmodule
 
       - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add path/to/your-file.txt
-          git commit -m "Automatically updated file from another repository"
+          git add ADBlock.sgmodule
+          git commit -m "Automatically updated ADBlock.sgmodule from another repository"
           git push

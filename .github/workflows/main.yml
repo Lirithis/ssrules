@@ -19,15 +19,11 @@ jobs:
 
       - name: Process file
         run: |
-          # 定义精确匹配的目标行
-          TARGET_LINE='jd_price.js =type=http-response, pattern=^https?:\/\/in\.m\.jd\.com\/product\/graphext\/\d+\.html, script-path=https://raw.githubusercontent.com/XiangwanGuan/Shadowrocket/main/Rewrite/JavaScript/jd_price.js, requires-body=true, max-size=-1'
-          
           # 获取当前更新时间
           UPDATE_DATE=$(date +"%Y-%m-%d %H:%M:%S")
-
-          # 使用 awk 精确匹配删除目标行，并替换前三行
-          awk -v date="$UPDATE_DATE" -v target="$TARGET_LINE" '
-            $0 == target { next }
+          # 使用 awk 处理文件，如果行中包含 jd_price.js 则删除该行，并替换前三行
+          awk -v date="$UPDATE_DATE" '
+            /jd_price\.js/ { next }
             NR == 1 { print "#!name=ADBlock"; next }
             NR == 2 { print "#!desc=去广告"; next }
             NR == 3 { print "#!Updated:" date; next }

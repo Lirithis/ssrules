@@ -10,25 +10,39 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # 正确使用内置令牌
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download the target file
         run: |
-          curl -s -o temp.txt https://raw.githubusercontent.com/XiangwanGuan/Shadowrocket/8dd21c62533f6c027ea51c5de1e180b6b1a543ab/Module.sgmodule
+          curl -s -o source.txt https://raw.githubusercontent.com/XiangwanGuan/Shadowrocket/8dd21c62533f6c027ea51c5de1e180b6b1a543ab/Module.sgmodule
 
-      - name: Filter and update ADBlock.sgmodule
+      - name: Process ADBlock.sgmodule
         run: |
-          UPDATE_DATE=$(date +"%Y-%m-%d %H:%M:%S")
-          tail -n +4 temp.txt | grep -v 'jd_price.js =type=http-response, pattern=^https\?:\/\/in\.m\.jd\.com\/product\/graphext\/\d+\.html, script-path=https://raw.githubusercontent.com/XiangwanGuan/Shadowrocket/main/Rewrite/JavaScript/jd_price.js, requires-body=true, max-size=-1' > filtered.txt
-          head -n 2 temp.txt > header.txt
-          echo "#! Updated: $UPDATE_DATE" >> header.txt
-          cat header.txt filtered.txt > ADBlock.sgmodule
+          # 生成更新日期标记
+          UPDATE_DATE="$(date +'%Y-%m-%d %H:%M:%S')"
+          
+          # 保留原始前三行
+          head -n 3 source.txt > header.txt
+          
+          # 在第三行插入更新日期（保留原第三行内容）
+          sed -i "3s|^|#! Updated: ${UPDATE_DATE}\n|" header.txt
+          
+          # 处理剩余内容（从第四行开始）
+          tail -n +4 source.txt | 
+          # 过滤指定行（使用正则表达式精确匹配）
+          grep -Ev 'jd_price\.js =type=http-response, pattern=^https?://in\.m\.jd\.com/product/graphext/\d+\.html, script-path=https://raw\.githubusercontent\.com/XiangwanGuan/Shadowrocket/main/Rewrite/JavaScript/jd_price\.js, requires-body=true, max-size=-1' > body.txt
+          
+          # 合并文件
+          cat header.txt body.txt > ADBlock.sgmodule
+          
+          # 清理临时文件
+          rm source.txt header.txt body.txt
 
       - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add ADBlock.sgmodule
-          git commit -m "Automatically updated ADBlock.sgmodule from another repository"
+          git commit -m "Auto-update: Filtered jd_price.js & added timestamp"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push origin HEAD:main

@@ -1,7 +1,6 @@
-#!name=融合模块
-#!desc=基于奶思合集定制，融合多种功能，适配Shadowrocket；
-#! Updated: 2025-03-20 01:17:12
-#!update=2025-03-19 13:37:48
+#=ADBlock
+!#desc=去广告
+#! Updated: 2025-03-20 01:26:38
 
 [Rule]
 AND, ((PROTOCOL,UDP),(DST-PORT,443)), REJECT-NO-DROP

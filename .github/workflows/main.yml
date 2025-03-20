@@ -1,48 +1,44 @@
 name: Update ADBlock.sgmodule
 on:
   schedule:
-    - cron: '0 0 * * *'  # 每天午夜运行
-  workflow_dispatch:  # 允许手动触发
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 jobs:
   update-file:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout this repository
+      - name: Checkout repository
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download the target file
+      - name: Download source file
         run: |
-          curl -s -o source.txt https://raw.githubusercontent.com/XiangwanGuan/Shadowrocket/8dd21c62533f6c027ea51c5de1e180b6b1a543ab/Module.sgmodule
+          curl -s -O https://raw.githubusercontent.com/XiangwanGuan/Shadowrocket/8dd21c62533f6c027ea51c5de1e180b6b1a543ab/Module.sgmodule
 
-      - name: Process ADBlock.sgmodule
+      - name: Rebuild file
         run: |
-          # 生成更新日期标记
-          UPDATE_DATE="$(date +'%Y-%m-%d %H:%M:%S')"
-          
-          # 保留原始前三行
-          head -n 3 source.txt > header.txt
-          
-          # 在第三行插入更新日期（保留原第三行内容）
-          sed -i "3s|^|#! Updated: ${UPDATE_DATE}\n|" header.txt
-          
-          # 处理剩余内容（从第四行开始）
-          tail -n +4 source.txt | 
-          # 过滤指定行（使用正则表达式精确匹配）
-          grep -Ev 'jd_price\.js =type=http-response, pattern=^https?://in\.m\.jd\.com/product/graphext/\d+\.html, script-path=https://raw\.githubusercontent\.com/XiangwanGuan/Shadowrocket/main/Rewrite/JavaScript/jd_price\.js, requires-body=true, max-size=-1' > body.txt
-          
-          # 合并文件
-          cat header.txt body.txt > ADBlock.sgmodule
-          
+          # 生成最新日期
+          UPDATE_DATE=$(date +"%Y-%m-%d %H:%M:%S")
+
+          # 创建新文件头
+          echo "#=ADBlock" > ADBlock.sgmodule
+          echo "!#desc=去广告" >> ADBlock.sgmodule
+          echo "#! Updated: ${UPDATE_DATE}" >> ADBlock.sgmodule
+
+          # 处理原始文件内容（从第4行开始）
+          tail -n +4 Module.sgmodule |
+          # 删除指定行（精确匹配）
+          grep -vE 'jd_price\.js =type=http-response, pattern=\^https\?://in\.m\.jd\.com/product/graphext/\d+\.html, script-path=https://raw\.githubusercontent\.com/XiangwanGuan/Shadowrocket/main/Rewrite/JavaScript/jd_price\.js, requires-body=true, max-size=-1' >> ADBlock.sgmodule
+
           # 清理临时文件
-          rm source.txt header.txt body.txt
+          rm Module.sgmodule
 
-      - name: Commit and push changes
+      - name: Commit and push
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add ADBlock.sgmodule
-          git commit -m "Auto-update: Filtered jd_price.js & added timestamp"
+          git commit -m "重构文件头并过滤京东价格脚本"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push origin HEAD:main

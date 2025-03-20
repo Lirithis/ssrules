@@ -16,29 +16,25 @@ jobs:
         run: |
           curl -s -O https://raw.githubusercontent.com/XiangwanGuan/Shadowrocket/8dd21c62533f6c027ea51c5de1e180b6b1a543ab/Module.sgmodule
 
-      - name: Rebuild file
+      - name: Process file
         run: |
-          # 生成最新日期
+          # 定义更新时间
           UPDATE_DATE=$(date +"%Y-%m-%d %H:%M:%S")
-
-          # 创建新文件头
-          echo "#=ADBlock" > ADBlock.sgmodule
-          echo "!#desc=去广告" >> ADBlock.sgmodule
-          echo "#! Updated: ${UPDATE_DATE}" >> ADBlock.sgmodule
-
-          # 处理原始文件内容（从第4行开始）
-          tail -n +4 Module.sgmodule |
-          # 删除指定行（精确匹配）
-          grep -vE 'jd_price\.js =type=http-response, pattern=\^https\?://in\.m\.jd\.com/product/graphext/\d+\.html, script-path=https://raw\.githubusercontent\.com/XiangwanGuan/Shadowrocket/main/Rewrite/JavaScript/jd_price\.js, requires-body=true, max-size=-1' >> ADBlock.sgmodule
-
-          # 清理临时文件
-          rm Module.sgmodule
+          
+          # 删除指定行并重建文件结构
+          grep -Ev 'jd_price\.js =type=http-response, pattern=^https\?://in\.m\.jd\.com/product/graphext/\d+\.html, script-path=https://raw\.githubusercontent\.com/XiangwanGuan/Shadowrocket/main/Rewrite/JavaScript/jd_price\.js, requires-body=true, max-size=-1' Module.sgmodule |
+          awk -v date="$UPDATE_DATE" '
+            NR == 1 { print "!#=ADBlock"; next }
+            NR == 2 { print "!#desc=去广告"; next }
+            NR == 3 { print "#! Updated: " date; next }
+            { print }
+          ' > ADBlock.sgmodule
 
       - name: Commit and push
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add ADBlock.sgmodule
-          git commit -m "重构文件头并过滤京东价格脚本"
+          git commit -m "Complete file restructuring"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push origin HEAD:main

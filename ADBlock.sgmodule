@@ -1,6 +1,6 @@
 #!name=ADBlock
 #!desc=去广告
-#!Updated:2025-04-07 01:00:10
+#!Updated:2025-04-08 00:58:23
 
 [Rule]
 AND, ((PROTOCOL,UDP),(DST-PORT,443)), REJECT-NO-DROP

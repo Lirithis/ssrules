@@ -2,7 +2,7 @@ proxy-groups:
 #分流分组
   - {name: PROXY, type: select, include-all: true, icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Static.png }
   - {name: GLOBAL, type: select, proxies: [PROXY, DIRECT, AUTO], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Global.png }
-  - {name: Apple, type: select, proxies: [PROXY, DIRECT, AUTO], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png }
+  - {name: Apple, type: select, proxies: [PROXY, DIRECT, AUTO], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Apple.png }
   - {name: Emby, type: select, proxies: [PROXY, DIRECT, AUTO], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Emby.png }
   - {name: Microsoft, type: select, proxies: [PROXY, DIRECT, AUTO], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Microsoft.png }
   - {name: GAME, type: select, proxies: [PROXY, DIRECT, AUTO], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/GAME.png }
